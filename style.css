@@ -1,0 +1,26 @@
+@keyframes cactusAnimation {
+    20%{right: 20%;}
+    40%{right: 40%;}
+    60%{right: 60%;}
+    80%{right: 80%;}
+    100%{right: 100%;}
+}
+@keyframes cactusDisappear {
+    90%{opacity: 100%;}
+    100%{opacity: 0%;}
+}
+
+.cactusIsAnimated {
+    animation: cactusAnimation, cactusDisappear;
+    animation-timing-function: linear;
+}
+
+@keyframes dinoJumping {
+    50%{top: -20%;}
+    100%{top: -8%;}
+}
+
+.dinoIsJumping {
+    animation: dinoJumping;
+    animation-timing-function: linear;
+}

@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title></title>
+        <meta name="description" content="динозаврик">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" href="style.css">
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+
+    </head>
+    <body>
+        <div class="container" id="game"
+        style="text-align: center; 
+        position:relative; 
+        right: 0; left: 0; top: 0; bottom: 0; 
+        height: 100vh;
+        margin: 10% 10% 10% 20%;
+        ">
+            <img src="images/dino.png" id="dino-png" style="height: 8%; width: 6%; display:block; margin: 0 0 0 0; padding: 0; position: absolute; top: -8%;">
+            <!--
+            <img src="images/cactus_0.png" id="cactus-png" style="height: 5%; width: 5%; display:block; margin: 0 0 0 0; padding: 0; position: absolute; right: 0; top: -5%;">
+            -->
+            
+            <hr style="margin: 0 0 10px 0;" />
+            <label>Очки: </label>
+            <label id="scorepoints"></label>
+            <button id="playBtn" onkeyup="StartPLayingEnter()" onclick="StartPLayingClick()" type="button" class="btn btn-primary" data-toggle="button" aria-pressed="false" autocomplete="off" 
+            style="height: 5%; width: 8%; background-color: rgb(48, 48, 48); border: none;
+            ">
+                <i class="fa fa-play" aria-hidden="true"></i>
+            </button>
+            <i id="turnBorder" class="fa fa-cog"></i>
+        </div>
+
+        <script src="script.js"></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    </body>
+</html>
