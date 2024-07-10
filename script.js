@@ -1,20 +1,26 @@
 window.addEventListener("keyup", StartPlayingEnter);
 window.addEventListener("keydown", DinoJump);
-//window.addEventListener("click", StartPlayingClick);
+document.body.addEventListener("click", DinoJumpClick);
 let dino = document.getElementById("dino-png");
+dino.src = "images/dino.png";
 let playBtn = document.getElementById("playBtn");
 let showBorder = document.getElementById("turnBorder");
 showBorder.onclick = TurnBorder;
 let border = "none";
 playBtn.onclick = StartPlayingClick;
+if(window.width < window.height) {
+    playBtn.style.width = "5%";
+    playBtn.style.height = "8%";
+}
 dino.style.border = border;
 let gameIsInProcess = false;
 let dinoInAir = false;
-let cactusImages = ["images/cactus_0.png","images/cactus_1.png","images/cactus_2.png", "images/cactus_0.png"];
+let cactusImages = ["images/cactus_0.png","images/cactus_1.png","images/cactus_2.png", "images/cactus_0.png", "images/flying_1.png"];
 let score = 0;
 let scorepoints = document.getElementById("scorepoints");
 scorepoints.textContent = score;
 let animationTime = 3.0;
+let animateDinoInterval;
 
 function StartPlayingClick() {
     if(gameIsInProcess)
@@ -25,6 +31,7 @@ function StartPlayingClick() {
         playBtn.disabled = true;
         if(gameIsInProcess) {
             CactusSpawnProcess();
+            AnimateDino();
         }
     }
 }
@@ -36,20 +43,44 @@ function StartPlayingEnter(e) {
     }
 }
 
+function DinoJumpClick() {
+    DinoJump();
+}
+
 function DinoJump(e) {
     if(e.keyCode === 16 && gameIsInProcess == true) {
         if(dinoInAir != true) {
             dino.classList.add("dinoIsJumping");
             dino.style.animationDuration = animationTime * 333 + "ms";
             dinoInAir = true;
+            clearInterval(animateDinoInterval);
             setTimeout(() => {
                 if(dinoInAir != false) {
                     dino.classList.remove("dinoIsJumping");
                     dinoInAir = false;
+                    AnimateDino();
                 }
             }, animationTime * 333);
         }
     }
+}
+
+function AnimateDino() {
+    console.log(dino.src);
+    let f = true;
+    animateDinoInterval = setInterval(() => {
+        if(f) {
+            dino.src = "images/dino.png";
+            f = false;
+        }
+        else if (!f) {
+            dino.src = "images/dino_2.png"
+            f = true;
+        }
+        if (!gameIsInProcess)
+            clearInterval(animateDinoInterval);
+    }, animationTime * 50);
+
 }
 
 function CactusSpawnProcess() {
@@ -67,21 +98,21 @@ function CactusSpawnProcess() {
             if (gameIsInProcess) {
                 let i = 0;
                 SpawnCactus(i);
-                document.getElementById("existingCactus" + i).classList.add("cactusIsAnimated");
-                document.getElementById("existingCactus" + i).style.animation = "cactusAnimation "+ animationTime * 800 + "ms linear";
                 console.log(document.getElementById("existingCactus" + i).classList);
                 DetectCactusCollision("existingCactus" + i);
                 DeleteCactus("existingCactus" + i, animationTime * 800);
                 i++;
             }
-            else if (!gameIsInProcess)
+            if (!gameIsInProcess)
                 clearInterval(intervalId1);
         }, animationTime * 800 + 100);
 
         let intervalId0 = setInterval(() => {
             if(animationTime >= 1.0)
                 animationTime = animationTime - 0.1;
-            else if (animationTime < 1.0 || !gameIsInProcess)
+            else if (animationTime < 1.0)
+                clearInterval(intervalId0);
+            else if (!gameIsInProcess)
                 clearInterval(intervalId0);
         }, 10000);
 }
@@ -113,29 +144,61 @@ function DetectCactusCollision(cactusId) {
         console.log("gamestatus: " + gameIsInProcess);
         console.log("cactus: " + cactus.y);
         console.log("dino: " + dino.y);
-        S = (dino.x + 20) - cactus.x;
-        D = (dino.y - 10) - cactus.y;
-        F = (dino.width - 20) + cactus.width;
-        if(S * S + D * D <= F * F){
+
+        if (DetectCollision(dino,cactus))
             gameIsInProcess = false;
-        }
+
     }, animationTime * 33);
 }
 
+function DetectCollision(dino,object){
+    var XColl=false;
+    var YColl=false;
+  
+    if ((dino.x + dino.width >= object.x) && (dino.x <= object.x + object.width)) XColl = true;
+    if ((dino.y + dino.height >= object.y) && (dino.y <= object.y + object.height)) YColl = true;
+  
+    if (XColl&YColl)
+        return true;
+    return false;
+  }
+
 function SpawnCactus(count) {
     let existingCactus = document.createElement("img");
-    let cactusImage = cactusImages[RandomImgSrc(1,3)];
+    let cactusImage = cactusImages[RandomImgSrc(1,4)];
+    if (cactusImage === cactusImages[4]) {
+        existingCactus.style.top = "-15%";
+        existingCactus.style.width = "5%";
+        existingCactus.style.height = "3%";
 
-    existingCactus.style.width = "3%";
-    existingCactus.style.height = "5%";
-    existingCactus.src = cactusImage;
+        let flyingAnimate = setInterval(() => {
+            if(existingCactus === null)
+                clearInterval(flyingAnimate);
+            if(cactusImage === "images/flying_1.png")
+                cactusImage = "images/flying_2.png";
+            else if (cactusImage === "images/flying_2.png")
+                cactusImage = "images/flying_1.png";
+            existingCactus.src = cactusImage;
+        }, animationTime * 33);
+    }
+    else {
+        existingCactus.style.top = "-5%";
+        existingCactus.style.width = "3%";
+        existingCactus.style.height = "5%";
+        existingCactus.src = cactusImage;
+    }
+
+
     existingCactus.style.display = "block";
     existingCactus.style.margin = "0";
     existingCactus.style.position = "absolute";
     existingCactus.style.right = "0";
-    existingCactus.style.top = "-5%";
+
     existingCactus.style.border = border;
     existingCactus.id = "existingCactus" + count;
+
+    existingCactus.classList.add("cactusIsAnimated");
+    existingCactus.style.animation = "cactusAnimation "+ animationTime * 800 + "ms linear";
 
     console.log("id: " + existingCactus.id);
 
