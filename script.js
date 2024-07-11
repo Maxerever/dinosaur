@@ -1,6 +1,7 @@
 window.addEventListener("keyup", StartPlayingEnter);
-window.addEventListener("keydown", DinoJump);
+window.addEventListener("keydown", DinoJumpShift);
 document.body.addEventListener("click", DinoJumpClick);
+let container = document.getElementById("game");
 let dino = document.getElementById("dino-png");
 dino.src = "images/dino.png";
 let playBtn = document.getElementById("playBtn");
@@ -8,10 +9,43 @@ let showBorder = document.getElementById("turnBorder");
 showBorder.onclick = TurnBorder;
 let border = "none";
 playBtn.onclick = StartPlayingClick;
-if(window.width < window.height) {
-    playBtn.style.width = "5%";
-    playBtn.style.height = "8%";
-}
+
+let dinoTop = "0%";
+let cactusTop = "0%";
+let cactusWidth = "0%";
+let cactusHeight = "0%";
+let animationTime = 3.0;
+let dinoJumpTime;
+
+let checkWindow = setInterval(() => {
+    if(window.innerWidth < window.innerHeight) {
+        playBtn.style.width = "20%";
+        playBtn.style.height = "8%";
+        dino.style.width = "10%";
+        dino.style.height = "6%";
+        dino.style.top = "-6%";
+        cactusWidth = "5%";
+        cactusHeight = "5%";
+
+        dinoJumpTime = 2.0;
+        
+        container.style.margin = " 40% 20% 0 0"
+    }
+    else {
+        playBtn.style.width = "8%";
+        playBtn.style.height = "5%";
+        dino.style.width = "6%";
+        dino.style.height = "8%";
+        dino.style.top = "-8%";
+        container.style.margin = " 20% 10% 0 20%"
+        cactusWidth = "3%";
+        cactusHeight = "5%";
+
+        dinoJumpTime = 1.0;
+
+    }
+}, 500);
+
 dino.style.border = border;
 let gameIsInProcess = false;
 let dinoInAir = false;
@@ -19,7 +53,7 @@ let cactusImages = ["images/cactus_0.png","images/cactus_1.png","images/cactus_2
 let score = 0;
 let scorepoints = document.getElementById("scorepoints");
 scorepoints.textContent = score;
-let animationTime = 3.0;
+
 let animateDinoInterval;
 
 function StartPlayingClick() {
@@ -43,25 +77,29 @@ function StartPlayingEnter(e) {
     }
 }
 
-function DinoJumpClick() {
-    DinoJump();
+function DinoJump() {
+    dino.classList.add("dinoIsJumping");
+    dino.style.animationDuration = dinoJumpTime * animationTime * 333 + "ms";
+    dinoInAir = true;
+    clearInterval(animateDinoInterval);
+    setTimeout(() => {
+        if(dinoInAir != false) {
+            dino.classList.remove("dinoIsJumping");
+            dinoInAir = false;
+            AnimateDino();
+        }
+    }, dinoJumpTime * animationTime * 333);
 }
 
-function DinoJump(e) {
+function DinoJumpClick() {
+    if(dinoInAir != true && gameIsInProcess == true) {
+        DinoJump();
+    }
+}
+
+function DinoJumpShift(e) {
     if(e.keyCode === 16 && gameIsInProcess == true) {
-        if(dinoInAir != true) {
-            dino.classList.add("dinoIsJumping");
-            dino.style.animationDuration = animationTime * 333 + "ms";
-            dinoInAir = true;
-            clearInterval(animateDinoInterval);
-            setTimeout(() => {
-                if(dinoInAir != false) {
-                    dino.classList.remove("dinoIsJumping");
-                    dinoInAir = false;
-                    AnimateDino();
-                }
-            }, animationTime * 333);
-        }
+        DinoJump();
     }
 }
 
@@ -168,8 +206,8 @@ function SpawnCactus(count) {
     let cactusImage = cactusImages[RandomImgSrc(1,4)];
     if (cactusImage === cactusImages[4]) {
         existingCactus.style.top = "-15%";
-        existingCactus.style.width = "5%";
-        existingCactus.style.height = "3%";
+        existingCactus.style.width = cactusHeight * 1.5;
+        existingCactus.style.height = cactusWidth;
 
         let flyingAnimate = setInterval(() => {
             if(existingCactus === null)
@@ -183,8 +221,8 @@ function SpawnCactus(count) {
     }
     else {
         existingCactus.style.top = "-5%";
-        existingCactus.style.width = "3%";
-        existingCactus.style.height = "5%";
+        existingCactus.style.width = cactusWidth;
+        existingCactus.style.height = cactusHeight;
         existingCactus.src = cactusImage;
     }
 
